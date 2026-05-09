@@ -1,49 +1,39 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <main class="max-w-5xl mx-auto px-6 py-12 flex flex-col gap-8" data-progress-course="ai-{{ course.id }}">
+    <main class="max-w-5xl mx-auto px-6 py-12">
         <div>
             <a href="{% url 'home' %}" class="text-sm font-bold text-purple-400 hover:text-purple-300 transition-colors inline-block mb-6">
                 &larr; Powrót do kursów
             </a>
+
             <div class="flex items-center gap-3 mb-4">
-                <span class="text-[10px] font-bold px-2 py-1 bg-purple-500/20 rounded text-purple-300 uppercase tracking-widest">AI</span>
-                <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">{{ course.level }}</span>
+                <span class="text-[10px] font-bold px-2 py-1 bg-purple-500/20 rounded text-purple-300 uppercase tracking-widest">
+                    AI
+                </span>
+
+                <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
+                    {{ course.level }}
+                </span>
+
+                <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
+                    {{ course.category }}
+                </span>
             </div>
-            <h1 class="text-4xl font-extrabold text-white mb-2">{{ course.title }}</h1>
-            <p class="text-slate-400 text-lg">{{ course.description }}</p>
+
+            <h1 class="text-4xl font-extrabold text-white mb-2">
+                {{ course.title }}
+            </h1>
+
+            <p class="text-slate-400 text-lg">
+                {{ course.description }}
+            </p>
         </div>
 
-        <div class="course-progress-summary">
-            <span class="font-mono" data-progress-summary>0/{{ course.lessons|length }} ukończone</span>
-            <div class="course-progress-track">
-                <div class="course-progress-fill" data-progress-fill style="width: 0%"></div>
+        <article class="glass rounded-3xl p-8 lg:p-12 border border-purple-500/20 mt-8">
+            <div class="text-slate-300 leading-relaxed whitespace-pre-line text-lg">
+                {{ course.content }}
             </div>
-        </div>
-
-        <div class="flex flex-col gap-6">
-            {% for lesson in course.lessons %}
-                <article class="glass rounded-3xl p-8 border border-purple-500/20 relative overflow-hidden group hover:border-purple-500/40 transition-all duration-300" data-progress-item="{{ lesson.id }}">
-                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                        <span class="text-[10px] font-bold px-2 py-1 bg-purple-500/20 text-purple-300 rounded uppercase tracking-widest">{{ lesson.category }}</span>
-                        <span class="text-slate-400 text-xs font-mono">~{{ lesson.expected_time }} MIN</span>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
-                        Lekcja {{ forloop.counter }}: {{ lesson.title }}
-                    </h2>
-
-                    <p class="text-slate-400 text-sm leading-relaxed mb-6">{{ lesson.short_description }}</p>
-
-                    <div class="text-slate-300 leading-relaxed whitespace-pre-line border-t border-slate-700/50 pt-5">
-                        {{ lesson.content }}
-                    </div>
-
-                    <div class="border-t border-slate-700/50 mt-6 pt-4 flex justify-end">
-                        <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
-                    </div>
-                </article>
-            {% endfor %}
-        </div>
+        </article>
     </main>
 {% endblock %}

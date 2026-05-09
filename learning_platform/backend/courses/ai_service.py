@@ -16,58 +16,48 @@ class GeminiConfigurationError(RuntimeError):
 
 def _extract_json_from_text(text):
     text = text.strip()
-    match = re.search(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
 
+    match = re.search(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
     if match:
         text = match.group(1).strip()
 
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+
+        if start != -1 and end != -1 and end > start:
+            json_text = text[start:end + 1]
+            return json.loads(json_text)
+
+        raise
 
 
 def _normalize_course(data, topic):
-    lessons = data.get('lessons') or []
-
-    if not lessons:
-        lessons = [
-            {
-                'title': 'Wprowadzenie',
-                'category': 'Podstawy',
-                'expected_time': 5,
-                'short_description': f'Krótki start z tematem: {topic}.',
-                'content': data.get('content', ''),
-            }
-        ]
-
-    normalized_lessons = []
-    for index, lesson in enumerate(lessons, start=1):
-        normalized_lessons.append({
-            'id': f'lesson-{index}',
-            'title': lesson.get('title', f'Lekcja {index}'),
-            'category': lesson.get('category', 'AI'),
-            'expected_time': int(lesson.get('expected_time', 6)),
-            'short_description': lesson.get('short_description', ''),
-            'content': lesson.get('content', ''),
-        })
-
     return {
-        'id': uuid.uuid4().hex,
-        'title': data.get('title', f'Kurs: {topic}'),
-        'category': data.get('category', 'AI'),
-        'description': data.get('description', 'Spersonalizowany kurs wygenerowany przez AI.'),
-        'level': data.get('level', 'Poziom 1'),
-        'lessons': normalized_lessons,
+        "id": uuid.uuid4().hex,
+        "title": data.get("title", f"Kurs: {topic}"),
+        "category": data.get("category", "AI"),
+        "description": data.get(
+            "description",
+            "Spersonalizowany kurs wygenerowany przez AI."
+        ),
+        "estimated_time": int(data.get("estimated_time", 8)),
+        "level": data.get("level", "Poziom 1"),
+        "content": data.get("content", ""),
     }
 
 
 def generate_course_with_gemini(topic):
     if genai is None:
         raise GeminiConfigurationError(
-            'Generator AI jest niedostępny, bo brakuje biblioteki google-genai.'
+            "Generator AI jest niedostępny, bo brakuje biblioteki google-genai."
         )
 
     if not settings.GEMINI_API_KEY:
         raise GeminiConfigurationError(
-            'Generator AI jest niedostępny. Brakuje GEMINI_API_KEY w pliku backend/.env.'
+            "Generator AI jest niedostępny. Brakuje GEMINI_API_KEY w pliku backend/.env."
         )
 
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
@@ -80,32 +70,27 @@ Kurs dotyczy cyberbezpieczeństwa albo bezpiecznego korzystania z Internetu.
 
 Zasady:
 - pisz prostym językiem,
-- kurs ma mieć dokładnie 3 lekcje,
-- każda lekcja ma mieć praktyczny, bezpieczny charakter,
+- kurs ma być jednym spójnym materiałem, a nie listą lekcji,
+- nie twórz pola "lessons",
+- dodaj praktyczne przykłady,
 - nie używaj trudnych pojęć bez wyjaśnienia,
 - nie obiecuj stuprocentowej ochrony,
+- treść powinna być podzielona na krótkie sekcje z nagłówkami,
 - zwróć wyłącznie poprawny JSON.
 
 Format JSON:
 {{
   "title": "Tytuł kursu",
   "category": "Kategoria",
-  "description": "Krótki opis kursu",
+  "description": "Krótki opis kursu, maksymalnie 2 zdania",
+  "estimated_time": 8,
   "level": "Poziom 1",
-  "lessons": [
-    {{
-      "title": "Tytuł lekcji",
-      "category": "Kategoria",
-      "expected_time": 6,
-      "short_description": "Krótki opis lekcji",
-      "content": "Pełna treść lekcji"
-    }}
-  ]
+  "content": "Pełna treść kursu z nagłówkami i sekcjami"
 }}
 """
 
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model="gemini-2.5-flash",
         contents=prompt,
     )
 
