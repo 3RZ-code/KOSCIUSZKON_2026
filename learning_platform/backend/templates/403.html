@@ -1,0 +1,8 @@
+{% extends 'error.html' %}
+
+{% block error_code %}403{% endblock %}
+{% block error_title %}Brak dostępu{% endblock %}
+{% block error_message %}
+    Ta sekcja jest zablokowana dla Twojego konta albo wymaga dodatkowych uprawnień.
+{% endblock %}
+{% block error_status %}access_denied{% endblock %}

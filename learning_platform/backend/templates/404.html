@@ -1,0 +1,8 @@
+{% extends 'error.html' %}
+
+{% block error_code %}404{% endblock %}
+{% block error_title %}Nie znaleziono strony{% endblock %}
+{% block error_message %}
+    Ten adres nie prowadzi do żadnego aktywnego modułu. Kurs mógł zostać przeniesiony albo link jest nieaktualny.
+{% endblock %}
+{% block error_status %}route_missing{% endblock %}

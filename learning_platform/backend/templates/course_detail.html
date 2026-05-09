@@ -6,14 +6,50 @@
             Powrót do kursów
         </a>
 
-        <section class="mt-8 glass rounded-3xl p-8">
+        <section class="mt-8 glass rounded-3xl p-8" data-progress-course="{{ course_id }}">
             <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
                 Kurs {{ course_id }}
             </span>
             <h1 class="text-4xl font-extrabold text-white mt-4 mb-4">Szczegóły kursu</h1>
             <p class="text-slate-400 leading-relaxed">
-                To jest miejsce na opis kursu, listę lekcji i postęp użytkownika.
+                Artykuły i lekcje w tym kursie możesz oznaczać jako ukończone. Status zostanie zapamiętany w przeglądarce.
             </p>
+
+            <div class="course-progress-summary mt-8">
+                <span class="font-mono" data-progress-summary>0/3 ukończone</span>
+                <div class="course-progress-track">
+                    <div class="course-progress-fill" data-progress-fill style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="course-items mt-8">
+                <article class="course-item" data-progress-item="article-1">
+                    <div>
+                        <p class="course-item-kicker font-mono">ARTYKUŁ 01</p>
+                        <h2 class="course-item-title">Wprowadzenie do bezpieczeństwa</h2>
+                        <p class="course-item-text">Podstawowe pojęcia, ryzyka i dobre nawyki przy pracy online.</p>
+                    </div>
+                    <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
+                </article>
+
+                <article class="course-item" data-progress-item="article-2">
+                    <div>
+                        <p class="course-item-kicker font-mono">ARTYKUŁ 02</p>
+                        <h2 class="course-item-title">Hasła i menedżery haseł</h2>
+                        <p class="course-item-text">Jak tworzyć mocne hasła i dlaczego nie warto używać jednego wszędzie.</p>
+                    </div>
+                    <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
+                </article>
+
+                <article class="course-item" data-progress-item="article-3">
+                    <div>
+                        <p class="course-item-kicker font-mono">ARTYKUŁ 03</p>
+                        <h2 class="course-item-title">Phishing w praktyce</h2>
+                        <p class="course-item-text">Rozpoznawanie podejrzanych wiadomości, linków i formularzy logowania.</p>
+                    </div>
+                    <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
+                </article>
+            </div>
         </section>
     </main>
 {% endblock %}

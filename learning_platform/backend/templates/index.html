@@ -22,12 +22,13 @@
             </div>
             <div class="flex items-center gap-6 text-sm font-medium text-slate-400">
                 <a href="{% url 'home' %}" class="hover:text-teal-400 transition-colors">Strona główna</a>
-                <a href="{% url 'course_detail' 1 %}" class="hover:text-teal-400 transition-colors">Kursy</a>
             </div>
         </div>
     </nav>
 
     {% block content %}
     {% endblock %}
+
+    <script src="{% static 'js/cookies.js' %}"></script>
 </body>
 </html>

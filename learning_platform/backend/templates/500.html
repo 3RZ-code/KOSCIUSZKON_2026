@@ -1,0 +1,8 @@
+{% extends 'error.html' %}
+
+{% block error_code %}500{% endblock %}
+{% block error_title %}Błąd serwera{% endblock %}
+{% block error_message %}
+    Coś po naszej stronie nie zadziałało poprawnie. Wróć do dashboardu i spróbuj ponownie za chwilę.
+{% endblock %}
+{% block error_status %}server_fault{% endblock %}

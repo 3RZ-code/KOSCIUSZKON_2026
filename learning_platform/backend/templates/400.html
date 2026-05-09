@@ -1,0 +1,8 @@
+{% extends 'error.html' %}
+
+{% block error_code %}400{% endblock %}
+{% block error_title %}Nieprawidłowe żądanie{% endblock %}
+{% block error_message %}
+    Serwer nie mógł przetworzyć tego zapytania. Sprawdź adres strony albo wróć do dashboardu.
+{% endblock %}
+{% block error_status %}bad_request{% endblock %}
