@@ -1,19 +1,45 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <main class="max-w-5xl mx-auto px-6 py-12">
-        <a href="{% url 'home' %}" class="text-sm font-bold text-teal-400 hover:text-teal-300 transition-colors">
-            Powrót do kursów
-        </a>
+<main class="max-w-5xl mx-auto px-6 py-12">
+    <a href="{% url 'home' %}" class="text-sm font-bold text-teal-400 hover:text-teal-300 transition-colors">
+        Powrót do kursów
+    </a>
 
-        <section class="mt-8 glass rounded-3xl p-8">
+    <section class="mt-8 glass rounded-3xl p-8">
+        <div class="flex items-center gap-3 mb-4">
             <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
-                Kurs {{ course_id }}
+                {{ course.category }}
             </span>
-            <h1 class="text-4xl font-extrabold text-white mt-4 mb-4">Szczegóły kursu</h1>
-            <p class="text-slate-400 leading-relaxed">
-                To jest miejsce na opis kursu, listę lekcji i postęp użytkownika.
-            </p>
-        </section>
-    </main>
+
+            <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
+                {{ course.estimated_time }} min
+            </span>
+
+            {% if course.is_ai_generated %}
+                <span class="text-[10px] font-bold px-2 py-1 bg-purple-500/20 rounded text-purple-300 uppercase tracking-widest">
+                    AI
+                </span>
+            {% endif %}
+        </div>
+
+        <h1 class="text-4xl font-extrabold text-white mt-4 mb-4">
+            {{ course.title }}
+        </h1>
+
+        <p class="text-slate-400 leading-relaxed mb-8">
+            {{ course.description }}
+        </p>
+
+        <article class="course-content text-slate-300 leading-relaxed whitespace-pre-line">
+            {{ course.content }}
+        </article>
+
+        <div class="mt-10 pt-6 border-t border-slate-800">
+            <button class="py-3 px-6 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl transition-all">
+                Rozpocznij quiz
+            </button>
+        </div>
+    </section>
+</main>
 {% endblock %}

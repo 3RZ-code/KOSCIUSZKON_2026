@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-12">
+    <section class="glass rounded-3xl p-8">
+        <h1 class="text-3xl font-extrabold text-white mb-4">Brak dostępu</h1>
+        <p class="text-slate-400">
+            Ten kurs został wygenerowany dla innego użytkownika lub innej sesji.
+        </p>
+
+        <a href="{% url 'home' %}" class="inline-block mt-6 py-3 px-6 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl transition-all">
+            Wróć do strony głównej
+        </a>
+    </section>
+</main>
+{% endblock %}

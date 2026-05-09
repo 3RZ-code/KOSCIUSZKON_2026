@@ -1,91 +1,98 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="mb-10">
-            <h1 class="text-4xl font-extrabold text-white mb-2">Moje Kursy</h1>
-            <p class="text-slate-400">Kontynuuj swoją ścieżkę do zostania ekspertem security.</p>
-        </div>
+<main class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mb-10">
+        <h1 class="text-4xl font-extrabold text-white mb-2">Moje Kursy</h1>
+        <p class="text-slate-400">Kontynuuj swoją ścieżkę do zostania ekspertem security.</p>
+    </div>
 
-        <div class="flex border-b border-slate-800 mb-8 gap-8">
-            <button class="pb-4 text-sm font-bold tab-active uppercase tracking-wider">Wszystkie</button>
-            <button class="pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">W toku</button>
-            <button class="pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">Ukończone</button>
-            <button class="pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">Zakładki</button>
-        </div>
+    <div class="flex border-b border-slate-800 mb-8 gap-8">
+        <button class="pb-4 text-sm font-bold tab-active uppercase tracking-wider">Wszystkie</button>
+        <button class="pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">W toku</button>
+        <button class="pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">Ukończone</button>
+        <button class="pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">Zakładki</button>
+    </div>
+
+    {% if generated_courses %}
+        <section class="mb-12">
+            <h2 class="text-2xl font-extrabold text-white mb-4">Kursy wygenerowane przez AI</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for course in generated_courses %}
+                    <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="p-3 bg-purple-500/10 rounded-2xl text-purple-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-1 bg-purple-500/20 rounded text-purple-300 uppercase tracking-widest">
+                                AI
+                            </span>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
+                            {{ course.title }}
+                        </h3>
+
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+                            {{ course.description }}
+                        </p>
+
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>{{ course.category }}</span>
+                            <span>{{ course.estimated_time }} min</span>
+                        </div>
+
+                        <a href="{% url 'course_detail' course.id %}" class="block text-center w-full mt-6 py-3 border border-purple-500/50 hover:bg-purple-500 hover:text-slate-950 text-purple-400 font-bold rounded-xl transition-all">
+                            OTWÓRZ
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section>
+        <h2 class="text-2xl font-extrabold text-white mb-4">Baza kursów</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="p-3 bg-teal-500/10 rounded-2xl text-teal-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                    </div>
-                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">Poziom 1</span>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">Podstawy Bezpieczeństwa</h3>
-                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Kurs jest przeznaczony dla każdego obywatela, który chce zachować bezpieczeństwo w sieci.</p>
+            {% for course in courses %}
+                <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="p-3 bg-teal-500/10 rounded-2xl text-teal-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
 
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-mono">
-                        <span class="text-teal-500">POSTĘP: 65%</span>
-                        <span class="text-slate-500">12/18 Lekcji</span>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
+                            {{ course.level }}
+                        </span>
                     </div>
-                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-teal-500 shadow-[0_0_10px_#14b8a6]" style="width: 65%"></div>
-                    </div>
-                </div>
-                <a href="{% url 'course_detail' 1 %}" class="block text-center w-full mt-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(20,184,166,0.2)]">
-                    KONTYNUUJ
-                </a>
-            </div>
 
-            <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9-9c1.657 0 3 3.358 3 7.5s-1.343 7.5-3 7.5m0-15c-1.657 0-3 3.358-3 7.5s1.343 7.5 3 7.5m0-15H3"/></svg>
-                    </div>
-                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">Poziom 2</span>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Sieci i Protokoły</h3>
-                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Głęboka analiza ruchu sieciowego, Wireshark i bezpieczeństwo warstwy 2.</p>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">
+                        {{ course.title }}
+                    </h3>
 
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-mono">
-                        <span class="text-blue-500">POSTĘP: 20%</span>
-                        <span class="text-slate-500">3/15 Lekcji</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" style="width: 20%"></div>
-                    </div>
-                </div>
-                <a href="{% url 'course_detail' 2 %}" class="block text-center w-full mt-6 py-3 border border-blue-500/50 hover:bg-blue-500 hover:text-slate-950 text-blue-400 font-bold rounded-xl transition-all">
-                    ROZPOCZNIJ
-                </a>
-            </div>
+                    <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+                        {{ course.description }}
+                    </p>
 
-            <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group opacity-75">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="p-3 bg-purple-500/10 rounded-2xl text-purple-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    <div class="flex justify-between text-xs font-mono text-slate-500">
+                        <span>{{ course.category }}</span>
+                        <span>{{ course.estimated_time }} min</span>
                     </div>
-                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">Master</span>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Inżynieria Wsteczna</h3>
-                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Analiza binarna i deasemblacja złośliwego oprogramowania w Ghidra.</p>
 
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-mono">
-                        <span class="text-purple-500">POSTĘP: 0%</span>
-                        <span class="text-slate-500">0/15 Lekcji</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-slate-700" style="width: 0%"></div>
-                    </div>
+                    <a href="{% url 'course_detail' course.id %}" class="block text-center w-full mt-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(20,184,166,0.2)]">
+                        ROZPOCZNIJ
+                    </a>
                 </div>
-                <button disabled class="w-full mt-6 py-3 bg-slate-800 text-slate-500 font-bold rounded-xl cursor-not-allowed">
-                    ZABLOKOWANE
-                </button>
-            </div>
+            {% empty %}
+                <p class="text-slate-400">Brak kursów w bazie.</p>
+            {% endfor %}
         </div>
-    </main>
+    </section>
+</main>
 {% endblock %}
