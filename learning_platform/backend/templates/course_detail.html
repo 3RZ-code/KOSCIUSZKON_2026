@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <main class="max-w-5xl mx-auto px-6 py-12">
+        <a href="{% url 'home' %}" class="text-sm font-bold text-teal-400 hover:text-teal-300 transition-colors">
+            Powrót do kursów
+        </a>
+
+        <section class="mt-8 glass rounded-3xl p-8">
+            <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
+                Kurs {{ course_id }}
+            </span>
+            <h1 class="text-4xl font-extrabold text-white mt-4 mb-4">Szczegóły kursu</h1>
+            <p class="text-slate-400 leading-relaxed">
+                To jest miejsce na opis kursu, listę lekcji i postęp użytkownika.
+            </p>
+        </section>
+    </main>
+{% endblock %}
