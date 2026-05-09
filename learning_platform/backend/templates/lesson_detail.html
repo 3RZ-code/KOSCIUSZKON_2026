@@ -30,6 +30,17 @@
                 {% endautoescape %}
             </div>
 
+            <div class="mt-8 space-y-4">
+                <button type="button" id="tts-lesson-button" class="inline-flex items-center gap-2 rounded-2xl bg-teal-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-teal-400 transition-all shadow-[0_0_18px_rgba(20,184,166,0.18)]" onclick="speakLessonText(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18V6l10 6-10 6z" />
+                    </svg>
+                    Odtwórz lekcję jako dźwięk
+                </button>
+                <div id="lesson-audio-player" class="bg-slate-950/10 rounded-3xl p-4 hidden"></div>
+                <div id="lesson-status" class="text-sm"></div>
+            </div>
+
             <!-- Stopka Lekcji / Akcja (Quiz) -->
             <footer class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <p class="text-slate-400 text-sm">Gratulacje z powodu dotarcia do końca materiału! Utrwal swoją wiedzę teraz.</p>
@@ -37,6 +48,52 @@
             </footer>
         </article>
     </main>
+
+    <script>
+        async function speakLessonText(button) {
+            const text = '{{ lesson.title|escapejs }}. {{ lesson.content|escapejs }}';
+            await speakText(button, text, 'lesson-audio-player', 'lesson-status');
+        }
+
+        async function speakText(button, text, playerId, statusId) {
+            const statusEl = document.getElementById(statusId);
+            const playerDiv = document.getElementById(playerId);
+
+            if (!text || !text.trim()) {
+                statusEl.textContent = 'Brak tekstu do przeczytania.';
+                statusEl.className = 'text-sm text-rose-400';
+                return;
+            }
+
+            button.disabled = true;
+            button.classList.add('opacity-70', 'cursor-not-allowed');
+            statusEl.textContent = 'Ładowanie audio...';
+            statusEl.className = 'text-sm text-slate-200';
+
+            try {
+                const response = await fetch(`/courses/listen/?text=${encodeURIComponent(text)}`);
+                if (!response.ok) {
+                    throw new Error(response.statusText || 'Błąd serwera');
+                }
+
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                playerDiv.innerHTML = `<audio controls autoplay class="w-full rounded-2xl"><source src="${audioUrl}" type="audio/mpeg">Twoja przeglądarka nie obsługuje odtwarzacza audio.</audio>`;
+                playerDiv.classList.remove('hidden');
+
+                statusEl.textContent = 'Audio gotowe do odtworzenia.';
+                statusEl.className = 'text-sm text-emerald-300';
+            } catch (error) {
+                console.error(error);
+                statusEl.textContent = 'Nie udało się wygenerować audio.';
+                statusEl.className = 'text-sm text-rose-400';
+            } finally {
+                button.disabled = false;
+                button.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        }
+    </script>
 
     <!-- Przycisk Agenta AI (prawy dolny róg) -->
     <div class="fixed bottom-6 right-6 z-50">
