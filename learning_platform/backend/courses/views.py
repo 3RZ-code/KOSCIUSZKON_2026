@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from gtts import gTTS
+from bs4 import BeautifulSoup
 
 from .ai_service import GeminiConfigurationError, generate_course_with_gemini
 from .models import Course, Lesson
@@ -93,7 +94,10 @@ def speak_view(request):
     if not text:
         return HttpResponse("Brak tekstu do przeczytania", status = 400)
     
-    tts = gTTS(text=text, lang='pl')
+    soup = BeautifulSoup(text, "html.parser")
+    clean_text = soup.get_text(separator=' ')
+    
+    tts = gTTS(text=clean_text, lang='pl')
     mp3_fp = io.BytesIO()
     tts.write_to_fp(mp3_fp)
     mp3_fp.seek(0)
