@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <main class="max-w-4xl mx-auto px-6 py-12 flex flex-col gap-8">
+    <main class="max-w-4xl mx-auto px-6 py-12 flex flex-col gap-8" data-progress-course="{{ course.id }}">
         <!-- Nawigacja -->
         <div>
             <a href="{% url 'course_detail' course.id %}" class="text-sm font-bold text-teal-400 hover:text-teal-300 transition-colors inline-flex items-center gap-2 mb-6">
@@ -10,7 +10,7 @@
         </div>
 
         <!-- Główna zawartość Lekcji -->
-        <article class="glass rounded-3xl p-8 lg:p-12 border border-slate-700/50">
+        <article class="glass rounded-3xl p-8 lg:p-12 border border-slate-700/50" data-progress-item="lesson-{{ lesson.id }}">
             <header class="mb-10 text-center">
                 <span class="text-xs font-bold px-3 py-1 bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30 uppercase tracking-widest inline-block mb-4">
                     {{ lesson.category|default:"Wiedza ogólna" }}
@@ -33,12 +33,7 @@
             <!-- Stopka Lekcji / Akcja (Quiz) -->
             <footer class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <p class="text-slate-400 text-sm">Gratulacje z powodu dotarcia do końca materiału! Utrwal swoją wiedzę teraz.</p>
-                <button class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-teal-500/50 text-white font-bold transition-all flex items-center justify-center gap-3">
-                    Przejdź do Quizu
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
+                <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
             </footer>
         </article>
     </main>
