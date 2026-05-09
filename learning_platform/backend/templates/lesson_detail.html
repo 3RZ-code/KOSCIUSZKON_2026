@@ -1,0 +1,56 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <main class="max-w-4xl mx-auto px-6 py-12 flex flex-col gap-8">
+        <!-- Nawigacja -->
+        <div>
+            <a href="{% url 'course_detail' course.id %}" class="text-sm font-bold text-teal-400 hover:text-teal-300 transition-colors inline-flex items-center gap-2 mb-6">
+                &larr; Wróć do kursu: {{ course.title }}
+            </a>
+        </div>
+
+        <!-- Główna zawartość Lekcji -->
+        <article class="glass rounded-3xl p-8 lg:p-12 border border-slate-700/50">
+            <header class="mb-10 text-center">
+                <span class="text-xs font-bold px-3 py-1 bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30 uppercase tracking-widest inline-block mb-4">
+                    {{ lesson.category|default:"Wiedza ogólna" }}
+                </span>
+                <h1 class="text-4xl lg:text-5xl font-extrabold text-white mb-6 leading-tight">{{ lesson.title }}</h1>
+                <div class="flex items-center justify-center text-slate-400 text-sm gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Czas ukończenia: <strong>{{ lesson.expected_time }} minut</strong>
+                </div>
+            </header>
+
+            <div class="prose prose-invert prose-teal max-w-none text-slate-300 leading-relaxed text-lg pb-10 border-b border-slate-700/50">
+                {% autoescape off %}
+                {{ lesson.content }}
+                {% endautoescape %}
+            </div>
+
+            <!-- Stopka Lekcji / Akcja (Quiz) -->
+            <footer class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+                <p class="text-slate-400 text-sm">Gratulacje z powodu dotarcia do końca materiału! Utrwal swoją wiedzę teraz.</p>
+                <button class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-teal-500/50 text-white font-bold transition-all flex items-center justify-center gap-3">
+                    Przejdź do Quizu
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </footer>
+        </article>
+    </main>
+
+    <!-- Przycisk Agenta AI (prawy dolny róg) -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button class="bg-indigo-600 hover:bg-indigo-500 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-indigo-500/50" onclick="alert('Agent AI - Wkrótce! Tutaj znajdziesz pomoc, generator materiałów i weryfikację zagrożeń.')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"></path>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+            </svg>
+        </button>
+    </div>
+{% endblock %}

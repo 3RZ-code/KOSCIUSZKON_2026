@@ -12,7 +12,8 @@ class Lesson(models.Model):
     title = models.CharField(max_length=200, verbose_name="Tytuł lekcji")
     category = models.CharField(max_length=100, verbose_name="Kategoria", blank=True)
     expected_time = models.IntegerField(help_text="Przewidywany czas (w minutach)", verbose_name="Czas ukończenia")
-    content = models.TextField(verbose_name="Treść lekcji")
+    short_description = models.TextField(verbose_name="Krótki opis (zajawka)", blank=True, null=True)
+    content = models.TextField(verbose_name="Główna, pełna treść lekcji")
     order = models.PositiveIntegerField(default=0, verbose_name="Kolejność")
 
     class Meta:
