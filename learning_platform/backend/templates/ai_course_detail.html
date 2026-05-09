@@ -8,7 +8,7 @@
                 &larr; Powrót do kursów
             </a>
 
-            <div class="flex items-center gap-3 mb-4">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
                 <span class="text-[10px] font-bold px-2 py-1 bg-purple-500/20 rounded text-purple-300 uppercase tracking-widest">
                     AI
                 </span>
@@ -20,21 +20,82 @@
                 <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
                     {{ course.category }}
                 </span>
+
+                <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded text-slate-400 uppercase tracking-widest">
+                    ~{{ course.estimated_time }} MIN
+                </span>
             </div>
 
             <h1 class="text-4xl font-extrabold text-white mb-2">
                 {{ course.title }}
             </h1>
 
-            <p class="text-slate-400 text-lg">
+            <p class="text-slate-400 text-lg max-w-3xl">
                 {{ course.description }}
             </p>
         </div>
 
         <article class="glass rounded-3xl p-8 lg:p-12 border border-purple-500/20 mt-8">
-            <div class="text-slate-300 leading-relaxed text-lg">
+            <div class="text-slate-300 leading-relaxed text-lg prose prose-invert">
                 {{ course.content|markdown_to_html }}
+            </div>
+
+            <div class="mt-8 space-y-4">
+                <button type="button" id="tts-course-button" class="inline-flex items-center gap-2 rounded-2xl bg-purple-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-purple-400 transition-all shadow-[0_0_18px_rgba(168,85,247,0.18)]" onclick="speakCourseText(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18V6l10 6-10 6z" />
+                    </svg>
+                    Odtwórz kurs jako dźwięk
+                </button>
+                <div id="course-audio-player" class="bg-slate-950/10 rounded-3xl p-4 hidden"></div>
+                <div id="course-status" class="text-sm"></div>
             </div>
         </article>
     </main>
+
+    <script>
+        async function speakCourseText(button) {
+            const text = '{{ course.title|escapejs }}. {{ course.description|escapejs }}. {{ course.content|escapejs }}';
+            await speakText(button, text, 'course-audio-player', 'course-status');
+        }
+
+        async function speakText(button, text, playerId, statusId) {
+            const statusEl = document.getElementById(statusId);
+            const playerDiv = document.getElementById(playerId);
+
+            if (!text || !text.trim()) {
+                statusEl.textContent = 'Brak tekstu do przeczytania.';
+                statusEl.className = 'text-sm text-rose-400';
+                return;
+            }
+
+            button.disabled = true;
+            button.classList.add('opacity-70', 'cursor-not-allowed');
+            statusEl.textContent = 'Ładowanie audio...';
+            statusEl.className = 'text-sm text-slate-200';
+
+            try {
+                const response = await fetch(`/courses/listen/?text=${encodeURIComponent(text)}`);
+                if (!response.ok) {
+                    throw new Error(response.statusText || 'Błąd serwera');
+                }
+
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                playerDiv.innerHTML = `<audio controls autoplay class="w-full rounded-2xl"><source src="${audioUrl}" type="audio/mpeg">Twoja przeglądarka nie obsługuje odtwarzacza audio.</audio>`;
+                playerDiv.classList.remove('hidden');
+
+                statusEl.textContent = 'Audio gotowe do odtworzenia.';
+                statusEl.className = 'text-sm text-emerald-300';
+            } catch (error) {
+                console.error(error);
+                statusEl.textContent = 'Nie udało się wygenerować audio.';
+                statusEl.className = 'text-sm text-rose-400';
+            } finally {
+                button.disabled = false;
+                button.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        }
+    </script>
 {% endblock %}
