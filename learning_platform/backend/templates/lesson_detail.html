@@ -94,4 +94,182 @@
             }
         }
     </script>
+<div class="minigame-container mt-5 p-4" style="background-color: #1e272e; color: #d2dae2; border-radius: 15px; border: 3px solid #ff3f34; text-align: center; font-family: 'Courier New', Courier, monospace;">
+    <h3 style="color: #ff3f34; text-transform: uppercase;">⚠️ Tryb Awaryjny: <span id="lesson-game-title" style="color: #0fb9b1;">System</span> ⚠️</h3>
+    <p>Haker atakuje! Szybko przepisz słowa kluczowe z tej lekcji, aby go powstrzymać. Masz <span id="time-left" style="color: #0fb9b1; font-size: 1.2em; font-weight: bold;">30</span> sekund.</p>
+    
+    <div id="game-typing-area" class="my-4">
+        <h2 id="target-word" style="color: #0fb9b1; letter-spacing: 2px; font-size: 2.5rem; user-select: none;" class="mb-3">KLIKNIJ START</h2>
+        
+        <input type="text" id="typing-input" class="form-control w-50 mx-auto text-center" style="font-size: 1.5rem; background-color: #485460; color: white; border: 2px solid #808e9b;" placeholder="Wpisz słowo..." disabled autocomplete="off">
+        
+        <div class="mt-3">
+            <span style="font-size: 1.2rem;">Wynik: <strong id="current-score" style="color: #ffdd59;">0</strong></span>
+        </div>
+        
+        <button id="start-btn" class="btn btn-danger mt-3 px-5 py-2" onclick="startGame()" style="font-size: 1.2rem; font-weight: bold;">ROZPOCZNIJ OBRONĘ</button>
+    </div>
+
+    <div id="leaderboard-area" class="mt-5 p-3" style="background-color: #485460; border-radius: 10px;">
+        <h4 style="color: #ffdd59;">🏆 Tablica Wyników tej lekcji (Top 5)</h4>
+        <ul id="leaderboard-list" class="list-unstyled" style="font-size: 1.2rem;">
+            </ul>
+    </div>
+</div>
+
+<script>
+    // --- BAZA SŁÓW DLA POSZCZEGÓLNYCH LEKCJI ---
+    const allLessonWords = {
+        'Wprowadzenie do cyberbezpieczeństwa': [
+            "Poufność", "Integralność", "Dostępność", "TriadaCIA", 
+            "Cyberbezpieczeństwo", "Haker", "Ochrona", "Zagrożenie", 
+            "Dane", "Atak"
+        ],
+        'Bezpieczeństwo haseł i uwierzytelnianie': [
+            "Haslo123", "Szyfrowanie", "Bitwarden", "Autoryzacja", 
+            "Dwuskładnikowe", "Biometria", "YubiKey", "TrudneHaslo!", 
+            "Passphrase", "Token"
+        ],
+        'Rozpoznawanie phishingu i socjotechniki': [
+            "Phishing", "Socjotechnika", "Oszustwo", "Manipulacja", 
+            "Weryfikacja", "FałszywyLink", "Spam", "Podszywanie", 
+            "Nadawca", "Podejrzany"
+        ]
+    };
+
+    // Domyślne słowa, jeśli dodasz nową lekcję, a zapomnisz dodać słów
+    const defaultWords = ["Bezpieczeństwo", "Internet", "Komputer", "Sieć", "Wirus", "Firewall"];
+
+    // Pobranie tytułu lekcji z szablonu Django
+    const currentLessonTitle = "{{ lesson.title|escapejs }}";
+    
+    // Ustawienie odpowiednich słów dla obecnej lekcji
+    const words = allLessonWords[currentLessonTitle] || defaultWords;
+    
+    // Zaktualizowanie nagłówka gry
+    document.getElementById("lesson-game-title").innerText = currentLessonTitle.split(" ")[0]; // bierze pierwsze słowo z tytułu lekcji
+
+    // Generowanie unikalnego klucza dla ciasteczka na podstawie nazwy lekcji
+    // Żeby w nazwie ciasteczka nie było spacji i polskich znaków
+    const safeCookieName = "leaderboard_" + currentLessonTitle.replace(/[^a-zA-Z0-9]/g, "");
+
+    let timer;
+    let timeLeft = 30;
+    let score = 0;
+    let currentWord = "";
+    
+    const timeDisplay = document.getElementById("time-left");
+    const targetWordDisplay = document.getElementById("target-word");
+    const typingInput = document.getElementById("typing-input");
+    const scoreDisplay = document.getElementById("current-score");
+    const startBtn = document.getElementById("start-btn");
+    const leaderboardList = document.getElementById("leaderboard-list");
+
+    // --- LOGIKA CIASTECZEK (COOKIES) ---
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            let date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        let nameEQ = name + "=";
+        let ca = document.cookie.split(';');
+        for(let i=0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function saveScoreToLeaderboard(newScore) {
+        let boardCookie = getCookie(safeCookieName);
+        let board = boardCookie ? JSON.parse(boardCookie) : [];
+        
+        board.push(newScore);
+        board.sort((a, b) => b - a); // Sortowanie malejąco
+        board = board.slice(0, 5); // Zostaw tylko Top 5
+        
+        setCookie(safeCookieName, JSON.stringify(board), 30);
+        updateLeaderboardDisplay();
+    }
+
+    function updateLeaderboardDisplay() {
+        let boardCookie = getCookie(safeCookieName);
+        let board = boardCookie ? JSON.parse(boardCookie) : [];
+        
+        leaderboardList.innerHTML = "";
+        if (board.length === 0) {
+            leaderboardList.innerHTML = "<li>Brak wyników. Bądź pierwszy!</li>";
+            return;
+        }
+
+        board.forEach((pts, index) => {
+            let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🔹";
+            leaderboardList.innerHTML += `<li class="my-1">${medal} Miejsce ${index + 1}: <strong style="color: #0fb9b1;">${pts} pkt</strong></li>`;
+        });
+    }
+
+    // --- LOGIKA GRY ---
+    function startGame() {
+        timeLeft = 30;
+        score = 0;
+        scoreDisplay.innerText = score;
+        timeDisplay.innerText = timeLeft;
+        typingInput.disabled = false;
+        typingInput.value = "";
+        typingInput.focus();
+        startBtn.style.display = "none";
+
+        nextWord();
+
+        timer = setInterval(() => {
+            timeLeft--;
+            timeDisplay.innerText = timeLeft;
+
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 1000);
+    }
+
+    function nextWord() {
+        let randomIndex = Math.floor(Math.random() * words.length);
+        currentWord = words[randomIndex];
+        targetWordDisplay.innerText = currentWord;
+        typingInput.value = "";
+    }
+
+    typingInput.addEventListener("input", () => {
+        if (typingInput.value === currentWord) {
+            score += 10;
+            scoreDisplay.innerText = score;
+            
+            targetWordDisplay.style.color = "#2ed573"; 
+            setTimeout(() => { targetWordDisplay.style.color = "#0fb9b1"; }, 150);
+            
+            nextWord();
+        }
+    });
+
+    function endGame() {
+        clearInterval(timer);
+        typingInput.disabled = true;
+        targetWordDisplay.innerText = "CZAS MINĄŁ!";
+        startBtn.innerText = "ZAGRAJ PONOWNIE";
+        startBtn.style.display = "inline-block";
+        
+        if(score > 0) {
+            saveScoreToLeaderboard(score);
+        }
+    }
+
+    // Inicjalizacja przy załadowaniu
+    updateLeaderboardDisplay();
+</script>
 {% endblock %}
