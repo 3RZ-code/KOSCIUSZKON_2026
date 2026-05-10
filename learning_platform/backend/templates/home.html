@@ -66,6 +66,15 @@
             </section>
         {% endif %}
 
+        <section class="mb-12">
+    <div class="mb-6">
+        <h2 class="text-2xl font-extrabold text-white mb-2">
+            Gotowe kursy
+        </h2>
+        <p class="text-slate-400 text-sm">
+            Materiały edukacyjne stworzone ręcznie i podzielone na lekcje.
+        </p>
+    </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for course in courses %}
                 <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group" data-course-card="{{ course.id }}" data-course-total="{{ course.lessons.count }}">
