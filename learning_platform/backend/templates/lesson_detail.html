@@ -48,62 +48,17 @@
             </footer>
         </article>
     </main>
-
-    <script>
-        async function speakLessonText(button) {
-            const text = '{{ lesson.title|escapejs }}. {{ lesson.content|escapejs }}';
-            await speakText(button, text, 'lesson-audio-player', 'lesson-status');
-        }
-
-        async function speakText(button, text, playerId, statusId) {
-            const statusEl = document.getElementById(statusId);
-            const playerDiv = document.getElementById(playerId);
-
-            if (!text || !text.trim()) {
-                statusEl.textContent = 'Brak tekstu do przeczytania.';
-                statusEl.className = 'text-sm text-rose-400';
-                return;
-            }
-
-            button.disabled = true;
-            button.classList.add('opacity-70', 'cursor-not-allowed');
-            statusEl.textContent = 'Ładowanie audio...';
-            statusEl.className = 'text-sm text-slate-200';
-
-            try {
-                const response = await fetch(`/courses/listen/?text=${encodeURIComponent(text)}`);
-                if (!response.ok) {
-                    throw new Error(response.statusText || 'Błąd serwera');
-                }
-
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-
-                playerDiv.innerHTML = `<audio controls autoplay class="w-full rounded-2xl"><source src="${audioUrl}" type="audio/mpeg">Twoja przeglądarka nie obsługuje odtwarzacza audio.</audio>`;
-                playerDiv.classList.remove('hidden');
-
-                statusEl.textContent = 'Audio gotowe do odtworzenia.';
-                statusEl.className = 'text-sm text-emerald-300';
-            } catch (error) {
-                console.error(error);
-                statusEl.textContent = 'Nie udało się wygenerować audio.';
-                statusEl.className = 'text-sm text-rose-400';
-            } finally {
-                button.disabled = false;
-                button.classList.remove('opacity-70', 'cursor-not-allowed');
-            }
-        }
-    </script>
 <div class="minigame-container mt-5 p-4" style="background-color: #1e272e; color: #d2dae2; border-radius: 15px; border: 3px solid #ff3f34; text-align: center; font-family: 'Courier New', Courier, monospace;">
-    <h3 style="color: #ff3f34; text-transform: uppercase;">⚠️ Tryb Awaryjny: <span id="lesson-game-title" style="color: #0fb9b1;">System</span> ⚠️</h3>
-    <p>Haker atakuje! Szybko przepisz słowa kluczowe z tej lekcji, aby go powstrzymać. Masz <span id="time-left" style="color: #0fb9b1; font-size: 1.2em; font-weight: bold;">30</span> sekund.</p>
+    <h3 style="color: #ff3f34; text-transform: uppercase;">⚠️ Odblokuj System: <span id="lesson-game-title" style="color: #0fb9b1;">Moduł</span> ⚠️</h3>
+    <p>Przeczytaj definicję i wpisz pasujące pojęcie z tej lekcji, aby powstrzymać atak! Masz <span id="time-left" style="color: #0fb9b1; font-size: 1.2em; font-weight: bold;">45</span> sekund.</p>
     
-    <div id="game-typing-area" class="my-4">
-        <h2 id="target-word" style="color: #0fb9b1; letter-spacing: 2px; font-size: 2.5rem; user-select: none;" class="mb-3">KLIKNIJ START</h2>
+    <div id="game-typing-area" class="my-4 p-3" style="background-color: #2f3640; border-radius: 10px; min-height: 150px; display: flex; flex-direction: column; justify-content: center;">
+        <h4 id="target-definition" style="color: #0fb9b1; font-size: 1.4rem; user-select: none;" class="mb-2">KLIKNIJ START, ABY ZOBACZYĆ DEFINICJĘ</h4>
+        <p id="word-hint" style="color: #718093; font-size: 1.5rem; letter-spacing: 5px; font-weight: bold;"></p>
         
-        <input type="text" id="typing-input" class="form-control w-50 mx-auto text-center" style="font-size: 1.5rem; background-color: #485460; color: white; border: 2px solid #808e9b;" placeholder="Wpisz słowo..." disabled autocomplete="off">
+        <input type="text" id="typing-input" class="form-control w-50 mx-auto text-center mt-3" style="font-size: 1.5rem; background-color: #485460; color: white; border: 2px solid #808e9b;" placeholder="Wpisz pojęcie..." disabled autocomplete="off">
         
-        <div class="mt-3">
+        <div class="mt-4">
             <span style="font-size: 1.2rem;">Wynik: <strong id="current-score" style="color: #ffdd59;">0</strong></span>
         </div>
         
@@ -111,61 +66,61 @@
     </div>
 
     <div id="leaderboard-area" class="mt-5 p-3" style="background-color: #485460; border-radius: 10px;">
-        <h4 style="color: #ffdd59;">🏆 Tablica Wyników tej lekcji (Top 5)</h4>
+        <h4 style="color: #ffdd59;">🏆 Najlepsi Obrońcy Systemu (Top 5)</h4>
         <ul id="leaderboard-list" class="list-unstyled" style="font-size: 1.2rem;">
             </ul>
     </div>
 </div>
 
 <script>
-    // --- BAZA SŁÓW DLA POSZCZEGÓLNYCH LEKCJI ---
-    const allLessonWords = {
+    // --- BAZA DEFINICJI DLA POSZCZEGÓLNYCH LEKCJI ---
+    const allLessonData = {
         'Wprowadzenie do cyberbezpieczeństwa': [
-            "Poufność", "Integralność", "Dostępność", "TriadaCIA", 
-            "Cyberbezpieczeństwo", "Haker", "Ochrona", "Zagrożenie", 
-            "Dane", "Atak"
+            { term: "Poufność", definition: "Zasada mówiąca, że dostęp do danych mają tylko osoby uprawnione." },
+            { term: "Integralność", definition: "Gwarancja, że informacje nie zostały zmienione lub sfałszowane przez osobę nieuprawnioną." },
+            { term: "Dostępność", definition: "Stan, w którym systemy i dane są gotowe do użycia zawsze, gdy tego potrzebujesz." },
+            { term: "Haker", definition: "Osoba, która włamuje się do systemów komputerowych." },
+            { term: "Okup", definition: "To, czego żądają cyberprzestępcy po zablokowaniu dostępu do Twoich plików." }
         ],
         'Bezpieczeństwo haseł i uwierzytelnianie': [
-            "Haslo123", "Szyfrowanie", "Bitwarden", "Autoryzacja", 
-            "Dwuskładnikowe", "Biometria", "YubiKey", "TrudneHaslo!", 
-            "Passphrase", "Token"
+            { term: "Dwuskładnikowe", definition: "Logowanie, które oprócz hasła wymaga np. kodu SMS (tzw. 2FA)." },
+            { term: "Menedżer", definition: "Program, który za Ciebie wymyśla i bezpiecznie przechowuje wszystkie hasła (np. Bitwarden)." },
+            { term: "Passphrase", definition: "Hasło zbudowane z kilku łatwych do zapamiętania słów (fraza hasłowa)." },
+            { term: "Bruteforce", definition: "Atak polegający na zgadywaniu hasła poprzez sprawdzanie wszystkich możliwych kombinacji." }
         ],
         'Rozpoznawanie phishingu i socjotechniki': [
-            "Phishing", "Socjotechnika", "Oszustwo", "Manipulacja", 
-            "Weryfikacja", "FałszywyLink", "Spam", "Podszywanie", 
-            "Nadawca", "Podejrzany"
+            { term: "Phishing", definition: "Oszustwo polegające na podszywaniu się pod zaufaną firmę w celu wyłudzenia danych." },
+            { term: "Socjotechnika", definition: "Sztuka manipulacji ludźmi, aby skłonić ich do ujawnienia poufnych informacji." },
+            { term: "Link", definition: "Element w wiadomości e-mail, w który nie powinieneś klikać, jeśli nie znasz nadawcy." },
+            { term: "Presja", definition: "Technika oszustów polegająca na wywoływaniu u ofiary poczucia naglącego czasu (np. 'Zablokujemy Twoje konto za godzinę!')." }
         ]
     };
 
-    // Domyślne słowa, jeśli dodasz nową lekcję, a zapomnisz dodać słów
-    const defaultWords = ["Bezpieczeństwo", "Internet", "Komputer", "Sieć", "Wirus", "Firewall"];
+    const defaultData = [
+        { term: "Wirus", definition: "Złośliwy program komputerowy." },
+        { term: "Internet", definition: "Globalna sieć komputerowa." }
+    ];
 
-    // Pobranie tytułu lekcji z szablonu Django
     const currentLessonTitle = "{{ lesson.title|escapejs }}";
+    const lessonData = allLessonData[currentLessonTitle] || defaultData;
     
-    // Ustawienie odpowiednich słów dla obecnej lekcji
-    const words = allLessonWords[currentLessonTitle] || defaultWords;
-    
-    // Zaktualizowanie nagłówka gry
-    document.getElementById("lesson-game-title").innerText = currentLessonTitle.split(" ")[0]; // bierze pierwsze słowo z tytułu lekcji
-
-    // Generowanie unikalnego klucza dla ciasteczka na podstawie nazwy lekcji
-    // Żeby w nazwie ciasteczka nie było spacji i polskich znaków
-    const safeCookieName = "leaderboard_" + currentLessonTitle.replace(/[^a-zA-Z0-9]/g, "");
+    document.getElementById("lesson-game-title").innerText = currentLessonTitle.split(" ")[0];
+    const safeCookieName = "def_leaderboard_" + currentLessonTitle.replace(/[^a-zA-Z0-9]/g, "");
 
     let timer;
-    let timeLeft = 30;
+    let timeLeft = 45; // Zwiększyłem czas, bo czytanie definicji zajmuje chwilę
     let score = 0;
-    let currentWord = "";
+    let currentTerm = "";
     
     const timeDisplay = document.getElementById("time-left");
-    const targetWordDisplay = document.getElementById("target-word");
+    const targetDefinitionDisplay = document.getElementById("target-definition");
+    const wordHintDisplay = document.getElementById("word-hint");
     const typingInput = document.getElementById("typing-input");
     const scoreDisplay = document.getElementById("current-score");
     const startBtn = document.getElementById("start-btn");
     const leaderboardList = document.getElementById("leaderboard-list");
 
-    // --- LOGIKA CIASTECZEK (COOKIES) ---
+    // --- LOGIKA CIASTECZEK ---
     function setCookie(name, value, days) {
         let expires = "";
         if (days) {
@@ -190,11 +145,9 @@
     function saveScoreToLeaderboard(newScore) {
         let boardCookie = getCookie(safeCookieName);
         let board = boardCookie ? JSON.parse(boardCookie) : [];
-        
         board.push(newScore);
-        board.sort((a, b) => b - a); // Sortowanie malejąco
-        board = board.slice(0, 5); // Zostaw tylko Top 5
-        
+        board.sort((a, b) => b - a);
+        board = board.slice(0, 5);
         setCookie(safeCookieName, JSON.stringify(board), 30);
         updateLeaderboardDisplay();
     }
@@ -202,13 +155,11 @@
     function updateLeaderboardDisplay() {
         let boardCookie = getCookie(safeCookieName);
         let board = boardCookie ? JSON.parse(boardCookie) : [];
-        
         leaderboardList.innerHTML = "";
         if (board.length === 0) {
             leaderboardList.innerHTML = "<li>Brak wyników. Bądź pierwszy!</li>";
             return;
         }
-
         board.forEach((pts, index) => {
             let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🔹";
             leaderboardList.innerHTML += `<li class="my-1">${medal} Miejsce ${index + 1}: <strong style="color: #0fb9b1;">${pts} pkt</strong></li>`;
@@ -217,7 +168,7 @@
 
     // --- LOGIKA GRY ---
     function startGame() {
-        timeLeft = 30;
+        timeLeft = 45;
         score = 0;
         scoreDisplay.innerText = score;
         timeDisplay.innerText = timeLeft;
@@ -226,7 +177,7 @@
         typingInput.focus();
         startBtn.style.display = "none";
 
-        nextWord();
+        nextDefinition();
 
         timer = setInterval(() => {
             timeLeft--;
@@ -238,29 +189,46 @@
         }, 1000);
     }
 
-    function nextWord() {
-        let randomIndex = Math.floor(Math.random() * words.length);
-        currentWord = words[randomIndex];
-        targetWordDisplay.innerText = currentWord;
+    function generateHint(word) {
+        // Zwraca pierwszą literę i podkreślniki dla reszty liter
+        let hint = word.charAt(0).toUpperCase() + " ";
+        for(let i = 1; i < word.length; i++) {
+            hint += "_ ";
+        }
+        return hint.trim();
+    }
+
+    function nextDefinition() {
+        let randomIndex = Math.floor(Math.random() * lessonData.length);
+        let item = lessonData[randomIndex];
+        currentTerm = item.term;
+        
+        targetDefinitionDisplay.innerText = `"${item.definition}"`;
+        wordHintDisplay.innerText = generateHint(currentTerm);
         typingInput.value = "";
     }
 
     typingInput.addEventListener("input", () => {
-        if (typingInput.value === currentWord) {
-            score += 10;
+        // Zamieniamy na małe litery i usuwamy białe znaki, żeby sprawdzanie było mniej restrykcyjne
+        const userInput = typingInput.value.trim().toLowerCase();
+        const target = currentTerm.toLowerCase();
+
+        if (userInput === target) {
+            score += 20; // Więcej punktów, bo zadanie jest trudniejsze
             scoreDisplay.innerText = score;
             
-            targetWordDisplay.style.color = "#2ed573"; 
-            setTimeout(() => { targetWordDisplay.style.color = "#0fb9b1"; }, 150);
+            targetDefinitionDisplay.style.color = "#2ed573"; 
+            setTimeout(() => { targetDefinitionDisplay.style.color = "#0fb9b1"; }, 300);
             
-            nextWord();
+            nextDefinition();
         }
     });
 
     function endGame() {
         clearInterval(timer);
         typingInput.disabled = true;
-        targetWordDisplay.innerText = "CZAS MINĄŁ!";
+        targetDefinitionDisplay.innerText = "CZAS MINĄŁ!";
+        wordHintDisplay.innerText = `Prawidłowa odpowiedź to: ${currentTerm}`;
         startBtn.innerText = "ZAGRAJ PONOWNIE";
         startBtn.style.display = "inline-block";
         
@@ -269,7 +237,6 @@
         }
     }
 
-    // Inicjalizacja przy załadowaniu
     updateLeaderboardDisplay();
 </script>
 {% endblock %}
