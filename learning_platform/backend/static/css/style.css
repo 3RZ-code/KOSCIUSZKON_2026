@@ -26,6 +26,15 @@ body {
     border-bottom: 2px solid #00f5d4;
 }
 
+.course-card-hidden,
+[data-course-card][hidden] {
+    display: none;
+}
+
+[data-course-empty][hidden] {
+    display: none;
+}
+
 .course-progress-summary {
     display: grid;
     gap: 10px;

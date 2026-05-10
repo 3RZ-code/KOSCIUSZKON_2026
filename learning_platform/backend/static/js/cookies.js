@@ -2,6 +2,10 @@
     var storageKey = 'cybercore_course_progress';
     var course = document.querySelector('[data-progress-course]');
     var courseCards = Array.prototype.slice.call(document.querySelectorAll('[data-course-card]'));
+    var filterContainer = document.querySelector('[data-course-filters]');
+    var filterButtons = Array.prototype.slice.call(document.querySelectorAll('[data-course-filter]'));
+    var emptyState = document.querySelector('[data-course-empty]');
+    var activeFilter = 'all';
 
     function readProgress() {
         try {
@@ -86,12 +90,81 @@
             if (fillElement) {
                 fillElement.style.width = percent + '%';
             }
+
+            card.dataset.completed = String(completed);
+            card.dataset.total = String(total);
+            card.dataset.progressPercent = String(percent);
+
+            if (total > 0 && completed === total) {
+                card.dataset.courseState = 'complete';
+            } else if (completed > 0) {
+                card.dataset.courseState = 'in-progress';
+            } else {
+                card.dataset.courseState = 'todo';
+            }
         });
+    }
+
+    function updateFilterButtons() {
+        filterButtons.forEach(function (button) {
+            var isActive = button.dataset.courseFilter === activeFilter;
+
+            button.classList.toggle('tab-active', isActive);
+            button.classList.toggle('text-slate-500', !isActive);
+            button.classList.toggle('hover:text-slate-300', !isActive);
+        });
+    }
+
+    function applyCourseFilter() {
+        var currentProgress = readProgress();
+        var visibleCount = 0;
+
+        updateCourseCards(currentProgress);
+
+        courseCards.forEach(function (card) {
+            var courseId = card.dataset.courseCard;
+            var savedCourse = currentProgress[courseId] || {};
+            var completed = countCompleted(savedCourse);
+            var total = Number(card.dataset.courseTotal) || 0;
+            var isInProgress = completed > 0 && completed < total;
+            var isComplete = total > 0 && completed === total;
+            var shouldShow = activeFilter === 'all'
+                || (activeFilter === 'in-progress' && isInProgress)
+                || (activeFilter === 'complete' && isComplete);
+
+            card.classList.toggle('course-card-hidden', !shouldShow);
+            card.hidden = !shouldShow;
+            card.style.display = shouldShow ? '' : 'none';
+
+            if (shouldShow) {
+                visibleCount += 1;
+            }
+        });
+
+        if (emptyState) {
+            emptyState.hidden = visibleCount > 0;
+        }
+
+        updateFilterButtons();
     }
 
     var progress = readProgress();
 
     updateCourseCards(progress);
+    applyCourseFilter();
+
+    if (filterContainer) {
+        filterContainer.addEventListener('click', function (event) {
+            var button = event.target.closest('[data-course-filter]');
+
+            if (!button) {
+                return;
+            }
+
+            activeFilter = button.dataset.courseFilter || 'all';
+            applyCourseFilter();
+        });
+    }
 
     if (!course) {
         return;
@@ -119,6 +192,7 @@
                 setItemStatus(item, nextStatus);
                 updateCourseSummary(items);
                 updateCourseCards(progress);
+                applyCourseFilter();
             });
         }
     });
