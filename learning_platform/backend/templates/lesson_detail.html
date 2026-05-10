@@ -31,20 +31,28 @@
             </div>
 
             <div class="mt-8 space-y-4">
-                <button type="button" id="tts-lesson-button" class="inline-flex items-center gap-2 rounded-2xl bg-teal-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-teal-400 transition-all shadow-[0_0_18px_rgba(20,184,166,0.18)]" onclick="speakLessonText(this)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 18V6l10 6-10 6z" />
-                    </svg>
-                    Odtwórz lekcję jako dźwięk
-                </button>
-                <div id="lesson-audio-player" class="bg-slate-950/10 rounded-3xl p-4 hidden"></div>
-                <div id="lesson-status" class="text-sm"></div>
-            </div>
+    <div class="flex flex-col sm:flex-row items-center gap-3">
+        <button type="button"
+                id="tts-lesson-button"
+                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-teal-400 transition-all shadow-[0_0_18px_rgba(20,184,166,0.18)]"
+                onclick="speakLessonText(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V6l10 6-10 6z" />
+            </svg>
+            Odtwórz lekcję jako dźwięk
+        </button>
 
-            <!-- Stopka Lekcji / Akcja (Quiz) -->
-            <footer class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
-                <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
-            </footer>
+        <button type="button"
+                class="status-toggle"
+                data-status-toggle>
+            Do zrobienia
+        </button>
+    </div>
+
+    <div id="lesson-audio-player" class="bg-slate-950/10 rounded-3xl p-4 hidden"></div>
+    <div id="lesson-status" class="text-sm"></div>
+</div>
         </article>
 <div class="minigame-container mt-12 p-8 glass rounded-3xl neon-border text-center" style="border-color: rgba(20, 184, 166, 0.3);">
     <div class="flex items-center justify-center gap-3 mb-6">
