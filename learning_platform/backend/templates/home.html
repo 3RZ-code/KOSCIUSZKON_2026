@@ -19,7 +19,9 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for course in generated_courses %}
-                        <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group" data-course-card="ai-{{ course.id }}" data-course-total="{{ course.lessons|length }}">
+                        <div class="glass rounded-3xl p-6 neon-border transition-all duration-300 group"
+                            data-course-card="ai-{{ course.id }}"
+                            data-course-total="1">
                             <div class="flex justify-between items-start mb-6">
                                  <div class="p-3 bg-purple-500/10 rounded-2xl text-purple-400">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

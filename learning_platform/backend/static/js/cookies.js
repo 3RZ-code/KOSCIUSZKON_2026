@@ -41,7 +41,7 @@
         item.classList.toggle('is-complete', isComplete);
 
         if (button) {
-            button.textContent = isComplete ? 'Complete' : 'Do zrobienia';
+            button.textContent = isComplete ? 'Ukończone' : 'Do zrobienia';
             button.setAttribute('aria-pressed', String(isComplete));
         }
     }

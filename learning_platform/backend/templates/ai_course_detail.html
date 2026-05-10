@@ -2,7 +2,7 @@
 {% load markdown_filters %}
 
 {% block content %}
-    <main class="max-w-5xl mx-auto px-6 py-12">
+    <main class="max-w-5xl mx-auto px-6 py-12" data-progress-course="ai-{{ course.id }}" data-progress-theme="ai">
         <div>
             <a href="{% url 'home' %}" class="text-sm font-bold text-purple-400 hover:text-purple-300 transition-colors inline-block mb-6">
                 &larr; Powrót do kursów
@@ -35,21 +35,34 @@
             </p>
         </div>
 
-        <article class="glass rounded-3xl p-8 lg:p-12 border border-purple-500/20 mt-8">
+        <article class="glass rounded-3xl p-8 lg:p-12 border border-purple-500/20 mt-8 transition-all" data-progress-item="ai-course">
             <div class="text-slate-300 leading-relaxed text-lg prose prose-invert">
                 {{ course.content|markdown_to_html }}
             </div>
 
             <div class="mt-8 space-y-4">
-                <button type="button" id="tts-course-button" class="inline-flex items-center gap-2 rounded-2xl bg-purple-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-purple-400 transition-all shadow-[0_0_18px_rgba(168,85,247,0.18)]" onclick="speakCourseText(this)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 18V6l10 6-10 6z" />
-                    </svg>
-                    Odtwórz kurs jako dźwięk
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button"
+                            id="tts-course-button"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-purple-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-purple-400 transition-all shadow-[0_0_18px_rgba(168,85,247,0.18)]"
+                            onclick="speakCourseText(this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18V6l10 6-10 6z" />
+                        </svg>
+                        Odtwórz kurs jako dźwięk
+                    </button>
+
+                <button type="button"
+                        class="status-toggle status-toggle-ai"
+                        data-status-toggle>
+                    Do zrobienia
                 </button>
-                <div id="course-audio-player" class="bg-slate-950/10 rounded-3xl p-4 hidden"></div>
-                <div id="course-status" class="text-sm"></div>
             </div>
+
+    <div id="course-audio-player" class="bg-slate-950/10 rounded-3xl p-4 hidden"></div>
+    <div id="course-status" class="text-sm"></div>
+</div>
         </article>
     </main>
 
