@@ -47,196 +47,208 @@
                 <button type="button" class="status-toggle" data-status-toggle>Do zrobienia</button>
             </footer>
         </article>
-    </main>
-<div class="minigame-container mt-5 p-4" style="background-color: #1e272e; color: #d2dae2; border-radius: 15px; border: 3px solid #ff3f34; text-align: center; font-family: 'Courier New', Courier, monospace;">
-    <h3 style="color: #ff3f34; text-transform: uppercase;">⚠️ Odblokuj System: <span id="lesson-game-title" style="color: #0fb9b1;">Moduł</span> ⚠️</h3>
-    <p>Przeczytaj definicję i wpisz pasujące pojęcie z tej lekcji, aby powstrzymać atak! Masz <span id="time-left" style="color: #0fb9b1; font-size: 1.2em; font-weight: bold;">45</span> sekund.</p>
-    
-    <div id="game-typing-area" class="my-4 p-3" style="background-color: #2f3640; border-radius: 10px; min-height: 150px; display: flex; flex-direction: column; justify-content: center;">
-        <h4 id="target-definition" style="color: #0fb9b1; font-size: 1.4rem; user-select: none;" class="mb-2">KLIKNIJ START, ABY ZOBACZYĆ DEFINICJĘ</h4>
-        <p id="word-hint" style="color: #718093; font-size: 1.5rem; letter-spacing: 5px; font-weight: bold;"></p>
-        
-        <input type="text" id="typing-input" class="form-control w-50 mx-auto text-center mt-3" style="font-size: 1.5rem; background-color: #485460; color: white; border: 2px solid #808e9b;" placeholder="Wpisz pojęcie..." disabled autocomplete="off">
-        
-        <div class="mt-4">
-            <span style="font-size: 1.2rem;">Wynik: <strong id="current-score" style="color: #ffdd59;">0</strong></span>
+<div class="minigame-container mt-12 p-8 glass rounded-3xl neon-border text-center" style="border-color: rgba(20, 184, 166, 0.3);">
+    <div class="flex items-center justify-center gap-3 mb-6">
+        <div class="p-2 bg-teal-500/10 rounded-xl text-teal-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
         </div>
-        
-        <button id="start-btn" class="btn btn-danger mt-3 px-5 py-2" onclick="startGame()" style="font-size: 1.2rem; font-weight: bold;">ROZPOCZNIJ OBRONĘ</button>
+        <h3 class="text-2xl font-extrabold text-white tracking-tight uppercase">
+            Moduł: <span id="lesson-game-title" class="text-teal-400">System</span>
+        </h3>
     </div>
 
-    <div id="leaderboard-area" class="mt-5 p-3" style="background-color: #485460; border-radius: 10px;">
-        <h4 style="color: #ffdd59;">🏆 Najlepsi Obrońcy Systemu (Top 5)</h4>
-        <ul id="leaderboard-list" class="list-unstyled" style="font-size: 1.2rem;">
-            </ul>
+    <p class="text-slate-400 mb-8 max-w-2xl mx-auto">
+        Przeczytaj definicję i wpisz pasujące pojęcie, aby odeprzeć atak hakerski. 
+        Masz <span id="time-left" class="text-teal-400 font-mono font-bold text-lg"> 45</span> sekund.
+    </p>
+    
+    <div id="game-typing-area" class="bg-slate-950/50 border border-slate-800 rounded-2xl p-8 mb-8 min-h-[220px] flex flex-col justify-center transition-all">
+        <h4 id="target-definition" class="text-white text-xl font-medium mb-4 leading-relaxed italic">
+            Kliknij przycisk poniżej, aby rozpocząć wyzwanie
+        </h4>
+        <p id="word-hint" class="text-teal-500/50 font-mono text-2xl tracking-[0.5em] font-bold mb-6"></p>
+        
+        <input type="text" id="typing-input" 
+            class="w-full max-w-md mx-auto rounded-xl bg-slate-900 border border-slate-700 text-teal-400 text-2xl p-4 outline-none focus:border-teal-500 transition-all text-center placeholder:text-slate-700" 
+            placeholder="Wpisz pojęcie..." disabled autocomplete="off">
+        
+        <div class="mt-6 flex justify-center items-center gap-4">
+            <span class="text-xs font-mono text-slate-500 uppercase tracking-widest">Aktualny wynik:</span>
+            <span id="current-score" class="text-2xl font-black text-teal-400">0</span>
+        </div>
+    </div>
+
+    <button id="start-btn" onclick="startGame()" 
+        class="px-10 py-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold rounded-xl transition-all shadow-[0_0_20px_rgba(20,184,166,0.2)] uppercase tracking-wider">
+        Uruchom grę
+    </button>
+
+    <div id="leaderboard-area" class="mt-12 pt-8 border-t border-slate-800">
+        <div class="flex items-center justify-center gap-2 mb-6">
+            <svg class="w-5 h-5 text-teal-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            <h4 class="text-white font-bold uppercase tracking-widest text-sm">Najlepsi Obrońcy Systemu</h4>
+        </div>
+        <div id="leaderboard-list" class="grid grid-cols-1 sm:grid-cols-5 gap-4 max-w-4xl mx-auto">
+            </div>
     </div>
 </div>
 
 <script>
-    // --- BAZA DEFINICJI DLA POSZCZEGÓLNYCH LEKCJI ---
+    // --- BAZA DANYCH GRY ---
     const allLessonData = {
         'Wprowadzenie do cyberbezpieczeństwa': [
-            { term: "Poufność", definition: "Zasada mówiąca, że dostęp do danych mają tylko osoby uprawnione." },
-            { term: "Integralność", definition: "Gwarancja, że informacje nie zostały zmienione lub sfałszowane przez osobę nieuprawnioną." },
-            { term: "Dostępność", definition: "Stan, w którym systemy i dane są gotowe do użycia zawsze, gdy tego potrzebujesz." },
-            { term: "Haker", definition: "Osoba, która włamuje się do systemów komputerowych." },
-            { term: "Okup", definition: "To, czego żądają cyberprzestępcy po zablokowaniu dostępu do Twoich plików." }
+            { term: "Poufność", definition: "Zasada mówiąca, że Twoje hasła i wiadomości pozostają prywatne i dostępne tylko dla Ciebie." },
+            { term: "Integralność", definition: "Gwarancja, że podczas przelewu bankowego kwota lub numer konta nie zostaną sfałszowane w drodze." },
+            { term: "Dostępność", definition: "Stan, w którym ważny system (np. szpitala lub banku) działa i można z niego skorzystać w dowolnej chwili." },
+            { term: "Triada", definition: "Skrót CIA, opisujący trzy filary bezpieczeństwa (Poufność, Integralność, Dostępność), to inaczej... co?" },
+            { term: "Pieniądze", definition: "Najczęstsza, główna motywacja działań dzisiejszych cyberprzestępców." },
+            { term: "Okup", definition: "Hakerzy blokują dostęp do Twoich plików i żądają go, aby je odblokować." },
+            { term: "Zautomatyzowane", definition: "Jakie są dzisiejsze ataki w sieci? Hakerzy nie atakują ręcznie pojedynczych osób, lecz używają maszyn." },
+            { term: "Komunikator", definition: "Aplikacja do rozmów (np. Messenger, WhatsApp), przez którą w Polsce bardzo często dochodzi do wyłudzania funduszy." },
+            { term: "Towar", definition: "Twoje dane osobowe to dla przestępców w sieci niezwykle cenny..." },
+            { term: "Uważność", definition: "Codzienna, ludzka... jest ważniejsza niż zaawansowane systemy bezpieczeństwa wielkich firm." }
         ],
         'Bezpieczeństwo haseł i uwierzytelnianie': [
             { term: "Dwuskładnikowe", definition: "Logowanie, które oprócz hasła wymaga np. kodu SMS (tzw. 2FA)." },
-            { term: "Menedżer", definition: "Program, który za Ciebie wymyśla i bezpiecznie przechowuje wszystkie hasła (np. Bitwarden)." },
+            { term: "Menedżer", definition: "Program, który za Ciebie wymyśla i bezpiecznie przechowuje wszystkie hasła." },
             { term: "Passphrase", definition: "Hasło zbudowane z kilku łatwych do zapamiętania słów (fraza hasłowa)." },
-            { term: "Bruteforce", definition: "Atak polegający na zgadywaniu hasła poprzez sprawdzanie wszystkich możliwych kombinacji." }
+            { term: "Bruteforce", definition: "Atak polegający na automatycznym zgadywaniu hasła poprzez sprawdzanie wszystkich kombinacji." }
         ],
         'Rozpoznawanie phishingu i socjotechniki': [
             { term: "Phishing", definition: "Oszustwo polegające na podszywaniu się pod zaufaną firmę w celu wyłudzenia danych." },
             { term: "Socjotechnika", definition: "Sztuka manipulacji ludźmi, aby skłonić ich do ujawnienia poufnych informacji." },
-            { term: "Link", definition: "Element w wiadomości e-mail, w który nie powinieneś klikać, jeśli nie znasz nadawcy." },
-            { term: "Presja", definition: "Technika oszustów polegająca na wywoływaniu u ofiary poczucia naglącego czasu (np. 'Zablokujemy Twoje konto za godzinę!')." }
+            { term: "Link", definition: "Element w wiadomości e-mail, w który absolutnie nie powinieneś klikać, jeśli nie znasz nadawcy." },
+            { term: "Presja", definition: "Zabieg oszustów polegający na wywoływaniu u ofiary poczucia naglącego czasu." }
+        ],
+        'Publiczne sieci Wi-Fi i VPN': [
+            { term: "VPN", definition: "Wirtualna sieć prywatna, która tworzy bezpieczny tunel dla Twoich danych." },
+            { term: "Hotspot", definition: "Publiczny punkt dostępu do Wi-Fi, np. w kawiarni czy hotelu." },
+            { term: "Tunel", definition: "VPN tworzy bezpieczny, szyfrowany... którym płyną Twoje dane." },
+            { term: "Szyfrowanie", definition: "Proces ukrywania danych, dzięki któremu nawet przechwycone informacje są dla hakera nieczytelne." }
+        ],
+        'Prywatność i ślad cyfrowy': [
+            { term: "Ślad", definition: "Każde polubienie czy komentarz zostawia w internecie tzw. ... cyfrowy." },
+            { term: "Metadane", definition: "Ukryte informacje w zdjęciu, które mogą np. zdradzić Twoją dokładną lokalizację." },
+            { term: "Prywatność", definition: "Ustawienia w mediach społecznościowych, które powinieneś zamknąć przed obcymi." },
+            { term: "Oversharing", definition: "Zjawisko nadmiernego dzielenia się szczegółami z życia prywatnego w sieci." }
+        ],
+        'Aktualizacje i kopie zapasowe': [
+            { term: "Backup", definition: "Inna nazwa na kopię zapasową danych." },
+            { term: "Ransomware", definition: "Rodzaj wirusa, który szyfruje dysk i żąda okupu za odzyskanie plików." },
+            { term: "Chmura", definition: "Wirtualny dysk w internecie, idealne miejsce na trzymanie jednej z kopii zapasowych." },
+            { term: "Łatka", definition: "Aktualizacja pobierana na urządzenie, która naprawia nowo odkrytą lukę w bezpieczeństwie." }
         ]
     };
 
-    const defaultData = [
-        { term: "Wirus", definition: "Złośliwy program komputerowy." },
-        { term: "Internet", definition: "Globalna sieć komputerowa." }
-    ];
-
+    const defaultData = [{ term: "Wirus", definition: "Złośliwy program komputerowy." }];
     const currentLessonTitle = "{{ lesson.title|escapejs }}";
     const lessonData = allLessonData[currentLessonTitle] || defaultData;
-    
-    document.getElementById("lesson-game-title").innerText = currentLessonTitle.split(" ")[0];
     const safeCookieName = "def_leaderboard_" + currentLessonTitle.replace(/[^a-zA-Z0-9]/g, "");
 
-    let timer;
-    let timeLeft = 45; // Zwiększyłem czas, bo czytanie definicji zajmuje chwilę
-    let score = 0;
-    let currentTerm = "";
+    let timer, timeLeft = 45, score = 0, currentTerm = "";
+    let recentTerms = []; // HISTORIA: Zmienna przechowująca ostatnie słowa
     
     const timeDisplay = document.getElementById("time-left");
-    const targetDefinitionDisplay = document.getElementById("target-definition");
-    const wordHintDisplay = document.getElementById("word-hint");
-    const typingInput = document.getElementById("typing-input");
+    const targetDef = document.getElementById("target-definition");
+    const hintDisplay = document.getElementById("word-hint");
+    const input = document.getElementById("typing-input");
     const scoreDisplay = document.getElementById("current-score");
-    const startBtn = document.getElementById("start-btn");
-    const leaderboardList = document.getElementById("leaderboard-list");
+    const btn = document.getElementById("start-btn");
 
-    // --- LOGIKA CIASTECZEK ---
-    function setCookie(name, value, days) {
-        let expires = "";
-        if (days) {
-            let date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    function setCookie(n, v, d) {
+        let e = ""; if (d) { let dt = new Date(); dt.setTime(dt.getTime() + (d*24*60*60*1000)); e = "; expires=" + dt.toUTCString(); }
+        document.cookie = n + "=" + (v || "") + e + "; path=/";
     }
 
-    function getCookie(name) {
-        let nameEQ = name + "=";
-        let ca = document.cookie.split(';');
-        for(let i=0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
+    function getCookie(n) {
+        let ne = n + "="; let ca = document.cookie.split(';');
+        for(let i=0; i < ca.length; i++) { let c = ca[i].trim(); if (c.indexOf(ne) == 0) return c.substring(ne.length, c.length); }
         return null;
     }
 
-    function saveScoreToLeaderboard(newScore) {
-        let boardCookie = getCookie(safeCookieName);
-        let board = boardCookie ? JSON.parse(boardCookie) : [];
-        board.push(newScore);
-        board.sort((a, b) => b - a);
-        board = board.slice(0, 5);
-        setCookie(safeCookieName, JSON.stringify(board), 30);
-        updateLeaderboardDisplay();
-    }
-
     function updateLeaderboardDisplay() {
-        let boardCookie = getCookie(safeCookieName);
-        let board = boardCookie ? JSON.parse(boardCookie) : [];
-        leaderboardList.innerHTML = "";
-        if (board.length === 0) {
-            leaderboardList.innerHTML = "<li>Brak wyników. Bądź pierwszy!</li>";
-            return;
-        }
-        board.forEach((pts, index) => {
-            let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🔹";
-            leaderboardList.innerHTML += `<li class="my-1">${medal} Miejsce ${index + 1}: <strong style="color: #0fb9b1;">${pts} pkt</strong></li>`;
+        let b = JSON.parse(getCookie(safeCookieName) || "[]");
+        const list = document.getElementById("leaderboard-list");
+        list.innerHTML = b.length ? "" : '<div class="col-span-5 text-slate-500 italic">Brak wyników</div>';
+        b.forEach((p, i) => {
+            list.innerHTML += `
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase mb-1">Miejsce ${i+1}</div>
+                    <div class="text-xl font-black text-teal-400">${p} <span class="text-[10px] text-slate-400">PKT</span></div>
+                </div>`;
         });
     }
 
-    // --- LOGIKA GRY ---
     function startGame() {
-        timeLeft = 45;
-        score = 0;
+        timeLeft = 45; score = 0;
+        recentTerms = []; // Resetowanie historii na starcie nowej gry
         scoreDisplay.innerText = score;
         timeDisplay.innerText = timeLeft;
-        typingInput.disabled = false;
-        typingInput.value = "";
-        typingInput.focus();
-        startBtn.style.display = "none";
-
+        input.disabled = false; input.value = ""; input.focus();
+        btn.classList.add("hidden");
         nextDefinition();
-
         timer = setInterval(() => {
-            timeLeft--;
-            timeDisplay.innerText = timeLeft;
-
-            if (timeLeft <= 0) {
-                endGame();
-            }
+            timeLeft--; timeDisplay.innerText = timeLeft;
+            if (timeLeft <= 0) endGame();
         }, 1000);
     }
 
-    function generateHint(word) {
-        // Zwraca pierwszą literę i podkreślniki dla reszty liter
-        let hint = word.charAt(0).toUpperCase() + " ";
-        for(let i = 1; i < word.length; i++) {
-            hint += "_ ";
-        }
-        return hint.trim();
-    }
-
     function nextDefinition() {
-        let randomIndex = Math.floor(Math.random() * lessonData.length);
-        let item = lessonData[randomIndex];
+        // Obliczanie wielkości historii (np. zapamiętujemy maksymalnie połowę elementów z lekcji)
+        let maxHistory = Math.max(1, Math.floor(lessonData.length / 2));
+        
+        let item;
+        let safetyCounter = 0; // Zabezpieczenie przed nieskończoną pętlą
+
+        // Losuj tak długo, aż znajdziesz słowo, którego NIE MA w historii (lub limit prób minie)
+        do {
+            item = lessonData[Math.floor(Math.random() * lessonData.length)];
+            safetyCounter++;
+        } while (recentTerms.includes(item.term) && safetyCounter < 20);
+
         currentTerm = item.term;
         
-        targetDefinitionDisplay.innerText = `"${item.definition}"`;
-        wordHintDisplay.innerText = generateHint(currentTerm);
-        typingInput.value = "";
+        // Dodaj słowo do historii i usuń najstarsze, jeśli historia jest już za długa
+        recentTerms.push(currentTerm);
+        if (recentTerms.length > maxHistory) {
+            recentTerms.shift();
+        }
+
+        // Aktualizacja interfejsu
+        targetDef.innerText = `"${item.definition}"`;
+        hintDisplay.innerText = currentTerm.charAt(0).toUpperCase() + " " + "_ ".repeat(currentTerm.length - 1);
+        input.value = "";
     }
 
-    typingInput.addEventListener("input", () => {
-        // Zamieniamy na małe litery i usuwamy białe znaki, żeby sprawdzanie było mniej restrykcyjne
-        const userInput = typingInput.value.trim().toLowerCase();
-        const target = currentTerm.toLowerCase();
-
-        if (userInput === target) {
-            score += 20; // Więcej punktów, bo zadanie jest trudniejsze
-            scoreDisplay.innerText = score;
-            
-            targetDefinitionDisplay.style.color = "#2ed573"; 
-            setTimeout(() => { targetDefinitionDisplay.style.color = "#0fb9b1"; }, 300);
-            
-            nextDefinition();
+    input.addEventListener("input", () => {
+        if (input.value.trim().toLowerCase() === currentTerm.toLowerCase()) {
+            score += 20; scoreDisplay.innerText = score;
+            targetDef.classList.add("text-teal-400");
+            setTimeout(() => { targetDef.classList.remove("text-teal-400"); nextDefinition(); }, 200);
         }
     });
 
     function endGame() {
         clearInterval(timer);
-        typingInput.disabled = true;
-        targetDefinitionDisplay.innerText = "CZAS MINĄŁ!";
-        wordHintDisplay.innerText = `Prawidłowa odpowiedź to: ${currentTerm}`;
-        startBtn.innerText = "ZAGRAJ PONOWNIE";
-        startBtn.style.display = "inline-block";
-        
+        input.disabled = true;
+        targetDef.innerText = "KONIEC CZASU!";
+        hintDisplay.innerText = `Prawidłowe hasło: ${currentTerm}`;
+        btn.innerText = "Zagraj ponownie";
+        btn.classList.remove("hidden");
         if(score > 0) {
-            saveScoreToLeaderboard(score);
+            let b = JSON.parse(getCookie(safeCookieName) || "[]");
+            b.push(score); b.sort((a,b)=>b-a);
+            setCookie(safeCookieName, JSON.stringify(b.slice(0,5)), 30);
+            updateLeaderboardDisplay();
         }
     }
 
+    document.getElementById("lesson-game-title").innerText = currentLessonTitle.split(" ").pop();
     updateLeaderboardDisplay();
 </script>
+</main>
 {% endblock %}
