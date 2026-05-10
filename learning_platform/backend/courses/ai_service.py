@@ -14,6 +14,11 @@ class GeminiConfigurationError(RuntimeError):
     pass
 
 
+def _clean_json_text(text):
+    # Remove invalid control characters that can appear inside AI-generated JSON strings.
+    return re.sub(r"[\x00-\x1f]", " ", text)
+
+
 def _extract_json_from_text(text):
     text = text.strip()
 
@@ -24,15 +29,18 @@ def _extract_json_from_text(text):
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        start = text.find("{")
-        end = text.rfind("}")
+        cleaned_text = _clean_json_text(text)
+        try:
+            return json.loads(cleaned_text)
+        except json.JSONDecodeError:
+            start = cleaned_text.find("{")
+            end = cleaned_text.rfind("}")
 
-        if start != -1 and end != -1 and end > start:
-            json_text = text[start:end + 1]
-            return json.loads(json_text)
+            if start != -1 and end != -1 and end > start:
+                json_text = cleaned_text[start:end + 1]
+                return json.loads(json_text)
 
         raise
-
 
 def _normalize_course(data, topic):
     return {
