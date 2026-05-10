@@ -54,6 +54,10 @@
     </main>
 
     <script>
+        const courseId = '{{ course.id }}';
+        const courseTitle = '{{ course.title|escapejs }}';
+        const courseContent = '{{ course.content|escapejs }}';
+
         async function speakCourseText(button) {
             const text = '{{ course.title|escapejs }}. {{ course.description|escapejs }}. {{ course.content|escapejs }}';
             await speakText(button, text, 'course-audio-player', 'course-status');
@@ -96,6 +100,226 @@
                 button.disabled = false;
                 button.classList.remove('opacity-70', 'cursor-not-allowed');
             }
+        }
+
+        // Assessment Functions
+        async function startAssessment() {
+            const section = document.getElementById('assessment-section');
+            const formContainer = document.getElementById('assessment-form-container');
+            const resultsContainer = document.getElementById('assessment-results');
+            
+            section.classList.remove('hidden');
+            formContainer.classList.remove('hidden');
+            resultsContainer.classList.add('hidden');
+            
+            // Scroll to assessment
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Generate questions
+            await generateQuestions();
+        }
+
+        async function generateQuestions() {
+            try {
+                const response = await fetch(`/courses/ai/${courseId}/assessment/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId,
+                        course_title: courseTitle,
+                        course_content: courseContent
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Nie udało się wygenerować pytań');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    displayQuestions(data.questions);
+                } else {
+                    showError(data.error || 'Nieznany błąd');
+                }
+            } catch (error) {
+                console.error(error);
+                showError('Nie udało się wygenerować pytań: ' + error.message);
+            }
+        }
+
+        function displayQuestions(questions) {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'bg-slate-950/40 rounded-2xl p-4 border border-slate-700/50';
+                questionDiv.innerHTML = `
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+                            <span class="text-sm font-bold text-emerald-400">${index + 1}</span>
+                        </div>
+                        <label class="flex-grow text-slate-300 font-semibold text-sm">
+                            ${q.question}
+                        </label>
+                    </div>
+                    <textarea 
+                        name="answer_${q.id}" 
+                        data-question-id="${q.id}"
+                        data-topic="${q.topic}"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-300 placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 text-sm resize-none" 
+                        rows="3" 
+                        placeholder="Twoja odpowiedź..."
+                        required
+                    ></textarea>
+                `;
+                container.appendChild(questionDiv);
+            });
+
+            document.getElementById('submit-btn').classList.remove('hidden');
+        }
+
+        function closeAssessment() {
+            document.getElementById('assessment-section').classList.add('hidden');
+        }
+
+        async function submitAssessment(event) {
+            event.preventDefault();
+
+            const answers = {};
+            const textareas = document.querySelectorAll('textarea[data-question-id]');
+            
+            textareas.forEach(textarea => {
+                const questionId = textarea.getAttribute('data-question-id');
+                answers[questionId] = textarea.value.trim();
+            });
+
+            // Validate that all questions have answers
+            const emptyAnswers = Object.values(answers).filter(ans => ans === '');
+            if (emptyAnswers.length > 0) {
+                alert('Proszę odpowiedzieć na wszystkie pytania.');
+                return;
+            }
+
+            // Show loading state
+            document.getElementById('assessment-form-container').classList.add('hidden');
+            document.getElementById('assessment-loading').classList.remove('hidden');
+
+            try {
+                const response = await fetch(`/courses/ai/${courseId}/evaluate/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId,
+                        answers: answers
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Nie udało się ocenić odpowiedzi');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    displayResults(data.evaluation);
+                } else {
+                    showError(data.error || 'Nieznany błąd');
+                }
+            } catch (error) {
+                console.error(error);
+                showError('Nie udało się ocenić odpowiedzi: ' + error.message);
+            } finally {
+                document.getElementById('assessment-loading').classList.add('hidden');
+            }
+        }
+
+        function displayResults(evaluation) {
+            // Update score
+            document.getElementById('result-score').textContent = evaluation.overall_score || 0;
+            document.getElementById('result-percentage').textContent = evaluation.overall_percentage || '0%';
+            document.getElementById('score-bar').style.width = (evaluation.overall_score || 0) + '%';
+            
+            // Update feedback
+            document.getElementById('result-feedback').textContent = evaluation.feedback || '';
+            
+            // Update topics
+            const topicsContainer = document.getElementById('topics-container');
+            topicsContainer.innerHTML = '';
+            
+            if (evaluation.topic_mastery && Array.isArray(evaluation.topic_mastery)) {
+                evaluation.topic_mastery.forEach(topic => {
+                    const statusBadge = topic.status === 'known' 
+                        ? '<span class="inline-block px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded">✓ Znasz</span>'
+                        : '<span class="inline-block px-2 py-1 bg-amber-500/20 text-amber-300 text-xs font-semibold rounded">⚠ Do nauki</span>';
+                    
+                    const topicDiv = document.createElement('div');
+                    topicDiv.className = 'bg-slate-900/50 rounded-lg p-3 border border-slate-700/30';
+                    topicDiv.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-slate-300 font-semibold text-sm">${topic.topic}</span>
+                            ${statusBadge}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-grow bg-slate-800 rounded-full h-1.5">
+                                <div class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width: ${(topic.score || 0) * 10}%"></div>
+                            </div>
+                            <span class="text-slate-400 text-xs">${topic.score || 0}/10</span>
+                        </div>
+                        <p class="text-slate-400 text-xs mt-2">${topic.feedback || ''}</p>
+                    `;
+                    topicsContainer.appendChild(topicDiv);
+                });
+            }
+            
+            // Update recommendations
+            const recommendationsList = document.getElementById('recommendations-list');
+            recommendationsList.innerHTML = '';
+            
+            if (evaluation.recommendations && Array.isArray(evaluation.recommendations)) {
+                evaluation.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.className = 'text-slate-300 text-sm flex gap-2';
+                    li.innerHTML = `
+                        <span class="text-emerald-400 font-bold flex-shrink-0">→</span>
+                        <span>${rec}</span>
+                    `;
+                    recommendationsList.appendChild(li);
+                });
+            }
+            
+            // Show results
+            document.getElementById('assessment-form-container').classList.add('hidden');
+            document.getElementById('assessment-loading').classList.add('hidden');
+            document.getElementById('assessment-error').classList.add('hidden');
+            document.getElementById('assessment-results').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('assessment-form-container').classList.add('hidden');
+            document.getElementById('assessment-loading').classList.add('hidden');
+            document.getElementById('assessment-error').classList.remove('hidden');
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 {% endblock %}
