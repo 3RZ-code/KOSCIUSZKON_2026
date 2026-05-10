@@ -40,14 +40,18 @@
                                 {{ course.description }}
                             </p>
 
-                            <div class="space-y-2">
-                                <div class="flex justify-between text-xs font-mono">
-                                    <span class="text-purple-500">POSTĘP: <span data-course-percent>0%</span></span>
-                                    <span class="text-slate-500" data-course-count>0/{{ course.lessons|length }} Lekcji</span>
-                                </div>
-                                <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-purple-500 shadow-[0_0_10px_#a855f7]" data-course-fill style="width: 0%"></div>
-                                </div>
+                            <div class="flex justify-between items-center text-xs font-mono text-slate-500">
+                                <span>{{ course.category }}</span>
+
+                                <span class="flex items-center gap-1 uppercase tracking-wider">
+                                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    ~{{ course.estimated_time }} MIN
+                                </span>
                             </div>
 
                             <a href="{% url 'ai_course_detail' course.id %}"
