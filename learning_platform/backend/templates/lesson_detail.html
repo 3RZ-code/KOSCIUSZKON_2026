@@ -97,6 +97,69 @@
 </div>
 
 <script>
+    async function speakLessonText(button) {
+        const title = "{{ lesson.title|escapejs }}";
+        const lessonContentElement = document.querySelector('[data-progress-item="lesson-{{ lesson.id }}"] .prose');
+
+        let content = "";
+
+        if (lessonContentElement) {
+            content = lessonContentElement.innerText;
+        }
+
+        const text = `${title}. ${content}`;
+
+        await speakText(button, text, "lesson-audio-player", "lesson-status");
+    }
+
+    async function speakText(button, text, playerId, statusId) {
+        const statusEl = document.getElementById(statusId);
+        const playerDiv = document.getElementById(playerId);
+
+        if (!text || !text.trim()) {
+            statusEl.textContent = "Brak tekstu do przeczytania.";
+            statusEl.className = "text-sm text-rose-400";
+            return;
+        }
+
+        button.disabled = true;
+        button.classList.add("opacity-70", "cursor-not-allowed");
+        statusEl.textContent = "Ładowanie audio...";
+        statusEl.className = "text-sm text-slate-200";
+
+        try {
+            const response = await fetch(`/courses/listen/?text=${encodeURIComponent(text)}`);
+
+            if (!response.ok) {
+                throw new Error(response.statusText || "Błąd serwera");
+            }
+
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            playerDiv.innerHTML = `
+                <audio controls autoplay class="w-full rounded-2xl">
+                    <source src="${audioUrl}" type="audio/mpeg">
+                    Twoja przeglądarka nie obsługuje odtwarzacza audio.
+                </audio>
+            `;
+
+            playerDiv.classList.remove("hidden");
+
+            statusEl.textContent = "Audio gotowe do odtworzenia.";
+            statusEl.className = "text-sm text-emerald-300";
+        } catch (error) {
+            console.error(error);
+            statusEl.textContent = "Nie udało się wygenerować audio.";
+            statusEl.className = "text-sm text-rose-400";
+        } finally {
+            button.disabled = false;
+            button.classList.remove("opacity-70", "cursor-not-allowed");
+        }
+    }
+</script>
+
+<script>
     // --- BAZA DANYCH GRY ---
     const allLessonData = {
         'Wprowadzenie do cyberbezpieczeństwa': [
